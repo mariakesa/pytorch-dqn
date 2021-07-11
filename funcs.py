@@ -19,6 +19,8 @@ from EnsemblePursuit.EnsemblePursuit import EnsemblePursuit
 from rastermap import Rastermap
 from scipy import stats
 
+from sklearn.decomposition import PCA, NMF
+
 def running_average(X, nbin = 100):
     Y = np.cumsum(X, axis=0)
     Y = Y[nbin:, :] - Y[:-nbin, :]
@@ -159,4 +161,22 @@ def receptive_fields_of_ind_layers(t_arr,imgs):
         n_neurons=np.nonzero(ep.weights[:,j].flatten())[0].shape[0]
         plt.imshow(B0[:,:,j],cmap='bwr')
         plt.title('Ensemble '+str(j)+', n_neurons='+str(n_neurons))
+        plt.show()
+
+def pca_receptive_fields_of_ind_layers(t_arr,imgs):
+    neurons=t_arr.T
+    pcs=PCA(n_components=15).fit_transform(t_arr.T)
+    B0=compute_rfield(imgs,pcs)
+    for j in range(0,15):
+        plt.imshow(B0[:,:,j],cmap='bwr')
+        plt.title('PC '+str(j))
+        plt.show()
+
+def nmf_receptive_fields_of_ind_layers(t_arr,imgs):
+    neurons=t_arr.T
+    comps=NMF(n_components=15).fit_transform(t_arr.T)
+    B0=compute_rfield(imgs,comps)
+    for j in range(0,15):
+        plt.imshow(B0[:,:,j],cmap='bwr')
+        plt.title('Component '+str(j))
         plt.show()
